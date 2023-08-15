@@ -1,11 +1,12 @@
 'use client'
+'use strict'
 
 import { useEffect} from "react"
 import vertexShaderSource from './shaders/vertex.glsl'
 import fragmentShaderSource from './shaders/fragment.glsl'
 import * as Render from './render'
 import m3 from './m3'
-import webglLessonsUI from './webgl-lessons-ui'
+//import webglLessonsUI from './webgl-lessons-ui'
 
 export default function Home() {
   
@@ -47,38 +48,11 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-      var translation = [200,150];
+      var translation = [500,350];
       var angleInRadians = 0;
-      var scale = [1,1];
+      var scale = [2,2];
 
       drawScene()
-
-      // Setup a ui.
-      webglLessonsUI.setupSlider("#x",      {value: translation[0], slide: updatePosition(0), max: gl.canvas.width });
-      webglLessonsUI.setupSlider("#y",      {value: translation[1], slide: updatePosition(1), max: gl.canvas.height});
-      webglLessonsUI.setupSlider("#angle",  {slide: updateAngle, max: 360});
-      webglLessonsUI.setupSlider("#scaleX", {value: scale[0], slide: updateScale(0), min: -5, max: 5, step: 0.01, precision: 2});
-      webglLessonsUI.setupSlider("#scaleY", {value: scale[1], slide: updateScale(1), min: -5, max: 5, step: 0.01, precision: 2});
-
-      function updatePosition(index) {
-        return function(event, ui) {
-          translation[index] = ui.value;
-          drawScene();
-        };
-      }
-
-      function updateAngle(event, ui) {
-        var angleInDegrees = 360 - ui.value;
-        angleInRadians = angleInDegrees * Math.PI / 180;
-        drawScene();
-      }
-
-      function updateScale(index) {
-        return function(event, ui) {
-          scale[index] = ui.value;
-          drawScene();
-        };
-      }
 
       function drawScene(){
         Render.resizeCanvasToDisplaySize(gl.canvas)
@@ -111,7 +85,6 @@ export default function Home() {
         gl.drawArrays(gl.TRIANGLES, offset, count);
 
       }
-      
     }
     main()
   },[])
