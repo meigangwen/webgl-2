@@ -21,6 +21,7 @@ export default function Home() {
 
       // look up where the vertex data needs to go.
       var positionLocation = gl.getAttribLocation(program, "a_position");
+      var colorLocation = gl.getAttribLocation(program, "a_color");
       var matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
       // Create a buffer and put three 2d clip space points in it
@@ -34,10 +35,10 @@ export default function Home() {
       var buffer = gl.createBuffer()
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
 
-      // Set the triangle
-      Render.setTriangle(gl);
+      // Set Geometry
+      Render.setRectangle(gl);
 
-
+      // setup attributes
       gl.enableVertexAttribArray(positionLocation)
       var size = 2;          // 2 components per iteration
       var type = gl.FLOAT;   // the data is 32bit floats
@@ -45,6 +46,22 @@ export default function Home() {
       var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
+
+
+      var buffer = gl.createBuffer()
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      // Set the triangle
+      Render.setColors(gl);
+      //Render.setTriangle(gl);
+
+      
+      gl.enableVertexAttribArray(colorLocation)
+      var size = 4;          // 2 components per iteration
+      var type = gl.FLOAT;   // the data is 32bit floats
+      var normalize = false; // don't normalize the data
+      var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+      var offset = 0;        // start at the beginning of the buffer
+      gl.vertexAttribPointer(colorLocation, size, type, normalize, stride, offset)
 
       var translation = [500,350];
       var angleInRadians = 0;
@@ -79,7 +96,7 @@ export default function Home() {
 
         // Draw the geometry.
         var offset = 0;
-        var count = 3;
+        var count = 6np;
         gl.drawArrays(gl.TRIANGLES, offset, count);
 
       }
