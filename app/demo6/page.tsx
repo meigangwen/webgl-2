@@ -19,17 +19,13 @@ export default function Home() {
       var fragmentShader = Render.createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
       var program = Render.createProgram(gl, vertexShader, fragmentShader);
 
-      // make some variables to hold the translation data
-      var translation = [0,0]
-      var width = 100
-      var height = 30
-      var color = [Math.random(), Math.random(), Math.random(), 1]
-
+  
 
       // look up where the vertex data needs to go.
       var positionLocation = gl.getAttribLocation(program, "a_position");
-      var colorLocation = gl.getUniformLocation(program, "u_color");
+      var colorLocation = gl.getUniformLocation(program, "u_color")
       var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+      var translationLocation = gl.getUniformLocation(program, "u_translation");
 
       // Create a buffer and put three 2d clip space points in it
       var positionBuffer = gl.createBuffer();
@@ -41,12 +37,18 @@ export default function Home() {
       // setup attributes
       gl.enableVertexAttribArray(positionLocation)
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+
+      Render.setGeometry(gl)
+
       var size = 2;          // 2 components per iteration
       var type = gl.FLOAT;   // the data is 32bit floats
       var normalize = false; // don't normalize the data
       var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
+
+      var translation = [0, 0];
+      var color = [Math.random(), Math.random(), Math.random(), 1];
 
       drawScene()
 
@@ -70,17 +72,17 @@ export default function Home() {
         // pixels to clip space in the shader
         gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height)
 
-        // Update the position buffer with rectangle positions
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-        Render.setRectangle(gl, translation[0],translation[1], width, height)
-
+       
         // Set the color
         gl.uniform4fv(colorLocation, color)
+
+        // Set the translation.
+        gl.uniform2fv(translationLocation, translation);
         
         // Draw the rectangle
         var primitiveType = gl.TRIANGLES;
         var offset = 0
-        var count = 6
+        var count = 18
         gl.drawArrays(primitiveType, offset, count);
 
       }

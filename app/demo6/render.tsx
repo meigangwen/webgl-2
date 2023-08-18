@@ -76,6 +76,36 @@ function setTriangle(gl) {
       gl.STATIC_DRAW);
 }
 
+function setGeometry(gl) {
+  gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+          // left column
+          0, 0,
+          30, 0,
+          0, 150,
+          0, 150,
+          30, 0,
+          30, 150,
+ 
+          // top rung
+          30, 0,
+          100, 0,
+          30, 30,
+          30, 30,
+          100, 0,
+          100, 30,
+ 
+          // middle rung
+          30, 60,
+          67, 60,
+          30, 90,
+          30, 90,
+          67, 60,
+          67, 90]),
+      gl.STATIC_DRAW);
+}
+
 function setColors(gl) {
   // Pick 2 random colors.
   var r1 = Math.random();
@@ -107,4 +137,4 @@ function setColors(gl) {
       gl.STATIC_DRAW);
 }
 
-export {createShader, createProgram, resizeCanvasToDisplaySize, randomInt, setRectangle, setTriangle, setColors}
+export {createShader, createProgram, resizeCanvasToDisplaySize, randomInt, setRectangle, setTriangle, setColors, setGeometry}

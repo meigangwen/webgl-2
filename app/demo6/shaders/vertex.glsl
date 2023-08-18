@@ -3,11 +3,13 @@ in vec2 a_position;
 
 uniform vec2 u_resolution;
 
-out vec4 v_color;
+uniform vec2 u_translation;
 
 void main() {
 
-    vec2 zeroToOne = a_position / u_resolution;
+    vec2 position = a_position + u_translation;
+
+    vec2 zeroToOne = position / u_resolution;
 
     vec2 zeroToTwo = zeroToOne * 2.0;
 
