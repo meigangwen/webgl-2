@@ -96,7 +96,7 @@ export default function Home() {
 
         // Draw the geometry.
         var offset = 0;
-        var count = 6np;
+        var count = 6;
         gl.drawArrays(gl.TRIANGLES, offset, count);
 
       }

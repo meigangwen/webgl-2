@@ -28,7 +28,7 @@ export default function Home() {
 
       // look up where the vertex data needs to go.
       var positionLocation = gl.getAttribLocation(program, "a_position");
-      var colorLocation = gl.getAttribLocation(program, "u_color");
+      var colorLocation = gl.getUniformLocation(program, "u_color");
       var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
 
       // Create a buffer and put three 2d clip space points in it
