@@ -26,6 +26,7 @@ export default function Home() {
       var colorLocation = gl.getUniformLocation(program, "u_color")
       var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
       var translationLocation = gl.getUniformLocation(program, "u_translation");
+      var rotationLocation = gl.getUniformLocation(program, "u_rotation");
 
       // Create a buffer and put three 2d clip space points in it
       var positionBuffer = gl.createBuffer();
@@ -47,7 +48,8 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-      var translation = [0, 0];
+      var translation = [100, 200];
+      var rotation = [0.5,0.5];
       var color = [Math.random(), Math.random(), Math.random(), 1];
 
       drawScene()
@@ -78,6 +80,9 @@ export default function Home() {
 
         // Set the translation.
         gl.uniform2fv(translationLocation, translation);
+
+        // Set the rotation.
+        gl.uniform2fv(rotationLocation, rotation);
         
         // Draw the rectangle
         var primitiveType = gl.TRIANGLES;
