@@ -46,9 +46,9 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-      var translation = [100, 200];
-      var rotationInRadians = [0,1];
-      var scale = [1,2];
+      var translation = [0, 0];
+      var rotationInRadians = [0,0];
+      var scale = [1,1];
       var color = [Math.random(), Math.random(), Math.random(), 1];
 
       drawScene()
@@ -80,12 +80,12 @@ export default function Home() {
         var translationMatrix = m3.translation(translation[0], translation[1]);
         var rotationMatrix = m3.rotation(rotationInRadians);
         var scaleMatrix = m3.scaling(scale[0], scale[1]);
-
-        // Multiply the matrices
+    
+        // Multiply the matrices.
         var matrix = m3.multiply(translationMatrix, rotationMatrix);
         matrix = m3.multiply(matrix, scaleMatrix);
-
-        // Set the matrix
+    
+        // Set the matrix.
         gl.uniformMatrix3fv(matrixLocation, false, matrix);
 
         // Draw the rectangle
