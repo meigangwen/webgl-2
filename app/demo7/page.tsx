@@ -46,8 +46,8 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-      var translation = [0, 0];
-      var rotationInRadians = [0,0];
+      var translation = [150, 100];
+      var rotationInRadians = 0;
       var scale = [1,1];
       var color = [Math.random(), Math.random(), Math.random(), 1];
 
