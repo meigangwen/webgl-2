@@ -46,10 +46,11 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-      var translation = [0, 0];
-      var rotationInRadians = [0,0];
-      var scale = [1,1];
-      var color = [Math.random(), Math.random(), Math.random(), 1];
+      var translation = [150, 100]
+      var rotationInRadians = 0
+      var scale = [1,1]
+      var color = [Math.random(), Math.random(), Math.random(), 1]
+      //console.log(color)
 
       drawScene()
 
@@ -76,23 +77,27 @@ export default function Home() {
         // Set the color
         gl.uniform4fv(colorLocation, color)
 
+
         // Compute the matrices
-        var translationMatrix = m3.translation(translation[0], translation[1]);
-        var rotationMatrix = m3.rotation(rotationInRadians);
-        var scaleMatrix = m3.scaling(scale[0], scale[1]);
+        var translationMatrix = m3.translation(translation[0], translation[1])
+        var rotationMatrix = m3.rotation(rotationInRadians)
+        var scaleMatrix = m3.scaling(scale[0], scale[1])
     
+       
         // Multiply the matrices.
-        var matrix = m3.multiply(translationMatrix, rotationMatrix);
-        matrix = m3.multiply(matrix, scaleMatrix);
+        var matrix = m3.multiply(scaleMatrix, rotationMatrix)
+        matrix = m3.multiply(matrix, translationMatrix)
     
         // Set the matrix.
-        gl.uniformMatrix3fv(matrixLocation, false, matrix);
+        gl.uniformMatrix3fv(matrixLocation, false, matrix)
+        //console.log(matrix)
 
+        
         // Draw the rectangle
-        var primitiveType = gl.TRIANGLES;
+        var primitiveType = gl.TRIANGLES
         var offset = 0
         var count = 18
-        gl.drawArrays(primitiveType, offset, count);
+        gl.drawArrays(primitiveType, offset, count)
 
       }
     }
@@ -106,9 +111,9 @@ export default function Home() {
         ];
       },
     
-      rotation: function rotation(angleInRadians) {
-        var c = Math.cos(angleInRadians);
-        var s = Math.sin(angleInRadians);
+      rotation: function rotation(angleInRadians:number) {
+        var c = Math.cos(angleInRadians)
+        var s = Math.sin(angleInRadians)
         return [
           c, -s, 0,
           s, c, 0,
