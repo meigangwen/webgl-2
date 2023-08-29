@@ -23,7 +23,7 @@ export default function Home() {
       // look up where the vertex data needs to go.
       var positionLocation = gl.getAttribLocation(program, "a_position");
       var colorLocation = gl.getUniformLocation(program, "u_color")
-      var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+      //var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
       var matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
       // Create a buffer and put three 2d clip space points in it
@@ -46,10 +46,13 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
+
       var translation = [150, 100];
       var rotationInRadians = 0;
       var scale = [1,1];
       var color = [Math.random(), Math.random(), Math.random(), 1];
+
+
 
       drawScene()
 
@@ -69,35 +72,52 @@ export default function Home() {
         // Bind the attribute/buffer set we want.
         gl.bindVertexArray(vao);
 
-        // Pass in the canvas resolution so we can convert from
-        // pixels to clip space in the shader
-        gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height)
-
         // Set the color
         gl.uniform4fv(colorLocation, color)
 
+
         // Compute the matrices
-        var translationMatrix = m3.translation(translation[0], translation[1]);
-        var rotationMatrix = m3.rotation(rotationInRadians);
-        var scaleMatrix = m3.scaling(scale[0], scale[1]);
-    
-        // Multiply the matrices.
-        var matrix = m3.multiply(translationMatrix, rotationMatrix);
-        matrix = m3.multiply(matrix, scaleMatrix);
-    
-        // Set the matrix.
-        gl.uniformMatrix3fv(matrixLocation, false, matrix);
+        var matrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight);
+        
+        //var translationMatrix = m3.translation(translation[0], translation[1])
+        //var rotationMatrix = m3.rotation(rotationInRadians)
+        //var scaleMatrix = m3.scaling(scale[0], scale[1])
+        
+        for (var i = 0; i < 5; ++i) {
+          // Apply the matrix
+          matrix = m3.translate(matrix, translation[0], translation[1])
+          matrix = m3.rotate(matrix, rotationInRadians)
+          matrix = m3.scale(matrix, scale[0], scale[1])
 
-        // Draw the rectangle
-        var primitiveType = gl.TRIANGLES;
-        var offset = 0
-        var count = 18
-        gl.drawArrays(primitiveType, offset, count);
+          // Set the matrix
+          gl.uniformMatrix3fv(matrixLocation, false, matrix)
 
+          // Draw the rectangle
+          var primitiveType = gl.TRIANGLES
+          var offset = 0
+          var count = 18
+          gl.drawArrays(primitiveType, offset, count)
+        }
       }
     }
 
     var m3 = {
+      projection: function (width, height) {
+        return [
+          2/width, 0, 0,
+          0, -2/height, 0,
+          -1, 1, 1,
+        ]
+      },
+
+      identity: function () {
+        return [
+          1, 0, 0,
+          0, 1, 0,
+          0, 0, 1,
+        ]
+      },
+
       translation: function translation(tx, ty) {
         return [
           1, 0, 0,
@@ -106,9 +126,9 @@ export default function Home() {
         ];
       },
     
-      rotation: function rotation(angleInRadians) {
-        var c = Math.cos(angleInRadians);
-        var s = Math.sin(angleInRadians);
+      rotation: function rotation(angleInRadians:number) {
+        var c = Math.cos(angleInRadians)
+        var s = Math.sin(angleInRadians)
         return [
           c, -s, 0,
           s, c, 0,
@@ -155,6 +175,18 @@ export default function Home() {
           b20 * a02 + b21 * a12 + b22 * a22,
         ];
       },
+
+      translate: function(matrix, tx, ty) {
+        return m3.multiply(matrix, m3.translation(tx, ty));
+      },
+
+      rotate: function(matrix, angleInRadians) {
+        return m3.multiply(matrix, m3.rotation(angleInRadians));
+      },
+
+      scale: function(matrix, sx, sy) {
+        return m3.multiply(matrix, m3.scaling(sx, sy));
+      }
     }
 
     main()
