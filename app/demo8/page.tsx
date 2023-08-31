@@ -21,10 +21,9 @@ export default function Home() {
   
 
       // look up where the vertex data needs to go.
-      var positionLocation = gl.getAttribLocation(program, "a_position");
-      var colorLocation = gl.getUniformLocation(program, "u_color")
-      //var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
-      var matrixLocation = gl.getUniformLocation(program, "u_matrix");
+      var positionLocation = gl.getAttribLocation(program, "a_position")
+      var colorLocation = gl.getAttribLocation(program, "a_color")
+      var matrixLocation = gl.getUniformLocation(program, "u_matrix")
 
       // Create a buffer and put three 2d clip space points in it
       var positionBuffer = gl.createBuffer();
@@ -46,6 +45,24 @@ export default function Home() {
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
+      // create the color buffer, make it the current ARRAY_BUFFER
+      // and copy in the color values
+      var colorBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+      Render.setColors(gl);
+ 
+      // Turn on the attribute
+      gl.enableVertexAttribArray(colorLocation);
+ 
+      // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
+      var size = 3;          // 3 components per iteration
+      var type = gl.UNSIGNED_BYTE;   // the data is 8bit unsigned bytes
+      var normalize = true;  // convert from 0-255 to 0.0-1.0
+      var stride = 0;        // 0 = move forward size * sizeof(type) each
+                            // iteration to get the next color
+      var offset = 0;        // start at the beginning of the buffer
+      gl.vertexAttribPointer(colorLocation, size, type, normalize, stride, offset);
+
       function radToDeg(r) {
         return r * 180 / Math.PI;
       }
@@ -57,7 +74,7 @@ export default function Home() {
       var translation = [45, 150, 0]
       var rotation = [degToRad(40), degToRad(25), degToRad(325)]
       var scale = [1,1,1]
-      var color = [Math.random(), Math.random(), Math.random(), 1]
+      //var color = [Math.random(), Math.random(), Math.random(), 1]
       //console.log(color)
 
       drawScene()
@@ -71,6 +88,14 @@ export default function Home() {
         // Clear the canvas
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+        
+
+        // turn on depth testing
+        gl.enable(gl.DEPTH_TEST);
+
+        // tell webgl to cull faces
+        gl.enable(gl.CULL_FACE);
+
 
         // Tell it to use our program (pair of shaders)
         gl.useProgram(program);
@@ -79,11 +104,21 @@ export default function Home() {
         gl.bindVertexArray(vao);
 
         // Set the color
-        gl.uniform4fv(colorLocation, color)
+        //gl.uniform4fv(colorLocation, color)
 
 
         // Compute the matrices
-        var matrix = m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400);
+
+        // try the new projection
+        var left = 0;
+        var right = gl.canvas.clientWidth;
+        var bottom = gl.canvas.clientHeight;
+        var top = 0;
+        var near = 400;
+        var far = -400;
+        var matrix = m4.orthographic(left, right, bottom, top, near, far);
+
+        //var matrix = m4.projection(gl.canvas.clientWidth, gl.canvas.clientHeight, 400);
         matrix = m4.translate(matrix, translation[0], translation[1], translation[2]);
         matrix = m4.xRotate(matrix, rotation[0]);
         matrix = m4.yRotate(matrix, rotation[1]);
@@ -102,96 +137,6 @@ export default function Home() {
       }
       
     }
-
-    /*
-    var m3 = {
-      projection: function (width, height) {
-        return [
-          2/width, 0, 0,
-          0, -2/height, 0,
-          -1, 1, 1,
-        ]
-      },
-
-      identity: function () {
-        return [
-          1, 0, 0,
-          0, 1, 0,
-          0, 0, 1,
-        ]
-      },
-
-      translation: function translation(tx, ty) {
-        return [
-          1, 0, 0,
-          0, 1, 0,
-          tx, ty, 1,
-        ];
-      },
-    
-      rotation: function rotation(angleInRadians:number) {
-        var c = Math.cos(angleInRadians)
-        var s = Math.sin(angleInRadians)
-        return [
-          c, -s, 0,
-          s, c, 0,
-          0, 0, 1,
-        ];
-      },
-    
-      scaling: function scaling(sx, sy) {
-        return [
-          sx, 0, 0,
-          0, sy, 0,
-          0, 0, 1,
-        ];
-      },
-    
-      multiply: function multiply(a, b) {
-        var a00 = a[0 * 3 + 0];
-        var a01 = a[0 * 3 + 1];
-        var a02 = a[0 * 3 + 2];
-        var a10 = a[1 * 3 + 0];
-        var a11 = a[1 * 3 + 1];
-        var a12 = a[1 * 3 + 2];
-        var a20 = a[2 * 3 + 0];
-        var a21 = a[2 * 3 + 1];
-        var a22 = a[2 * 3 + 2];
-        var b00 = b[0 * 3 + 0];
-        var b01 = b[0 * 3 + 1];
-        var b02 = b[0 * 3 + 2];
-        var b10 = b[1 * 3 + 0];
-        var b11 = b[1 * 3 + 1];
-        var b12 = b[1 * 3 + 2];
-        var b20 = b[2 * 3 + 0];
-        var b21 = b[2 * 3 + 1];
-        var b22 = b[2 * 3 + 2];
-        return [
-          b00 * a00 + b01 * a10 + b02 * a20,
-          b00 * a01 + b01 * a11 + b02 * a21,
-          b00 * a02 + b01 * a12 + b02 * a22,
-          b10 * a00 + b11 * a10 + b12 * a20,
-          b10 * a01 + b11 * a11 + b12 * a21,
-          b10 * a02 + b11 * a12 + b12 * a22,
-          b20 * a00 + b21 * a10 + b22 * a20,
-          b20 * a01 + b21 * a11 + b22 * a21,
-          b20 * a02 + b21 * a12 + b22 * a22,
-        ];
-      },
-
-      translate: function(matrix, tx, ty) {
-        return m3.multiply(matrix, m3.translation(tx, ty));
-      },
-
-      rotate: function(matrix, angleInRadians) {
-        return m3.multiply(matrix, m3.rotation(angleInRadians));
-      },
-
-      scale: function(matrix, sx, sy) {
-        return m3.multiply(matrix, m3.scaling(sx, sy));
-      }
-    }
-    */
 
     var m4 = {
       translation: function(tx, ty, tz) {
@@ -331,6 +276,18 @@ export default function Home() {
         ];
       },
 
+      orthographic: function(left, right, bottom, top, near, far) {
+        return [
+          2 / (right - left), 0, 0, 0,
+          0, 2 / (top - bottom), 0, 0,
+          0, 0, 2 / (near - far), 0,
+     
+          (left + right) / (left - right),
+          (bottom + top) / (bottom - top),
+          (near + far) / (near - far),
+          1,
+        ];
+      },
     }
 
     main()
