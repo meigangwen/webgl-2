@@ -9,5 +9,5 @@ uniform float u_time;      // for shadertoy, this is iTime
 void main() {
 	vec2 st = gl_FragCoord.xy/iResolution.xy;
     //vec2 pointer = gl_FragCoord.xy/iMouse.xy;
-	gl_FragColor = vec4(st.x,st.y,abs(sin(iTime*0.5)),1.0);
+	gl_FragColor = vec4(st.x,st.y,0.0,1.0);
 }
