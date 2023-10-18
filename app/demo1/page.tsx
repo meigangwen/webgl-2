@@ -1,3 +1,5 @@
+// this is a hello world demo
+// this demo draws a triangle on the screen, the triangle is defined by screen space positions
 'use client'
 
 import { useEffect} from "react"
@@ -6,10 +8,11 @@ import fragmentShaderSource from './shaders/fragment.glsl'
 import {createShader, createProgram, resizeCanvasToDisplaySize} from './render'
 
 export default function Home() {
-  
+
   useEffect(() => {
   
     function main() {
+      
       var canvas = document.querySelector("#c")
       var gl = canvas.getContext("webgl2");
 
@@ -73,6 +76,7 @@ export default function Home() {
       var offset = 0;
       var count = 3;
       gl.drawArrays(primitiveType, offset, count);
+      
     }
     main()
   },[])

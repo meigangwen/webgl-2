@@ -1,4 +1,8 @@
+// this demo draws a small rectangle
+// the points are defined in pixel units
+
 'use client'
+"use strict"
 
 import { useEffect} from "react"
 import vertexShaderSource from './shaders/vertex.glsl'
@@ -19,7 +23,7 @@ export default function Home() {
 
       // Link the two shaders into a program
       var program = createProgram(gl, vertexShader, fragmentShader);
-
+     
       // look up where the vertex data needs to go.
       var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
 
