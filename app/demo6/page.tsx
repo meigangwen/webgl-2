@@ -1,12 +1,27 @@
 'use client'
 
-import { useEffect} from "react"
+import { useEffect, useMemo} from "react"
 import vertexShaderSource from './shaders/vertex.glsl'
 import fragmentShaderSource from './shaders/fragment.glsl'
 import * as Render from './render'
+import { useControls } from 'leva'
 //import m3 from './m3'
 
 export default function Home() {
+  // define the leva UI
+  const {x,y,angle,scaleX,scaleY} = useControls("2D Transformation", {
+    x: { value:150, min:0, max:2000, step: 1},
+    y: { value:100, min:0, max:1000, step: 1},
+    angle: {value:0, min:0,max:360,step:1},
+    scaleX: {value:1,min:-5.0,max:5.0,step:0.1},
+    scaleY: {value:1,min:-5.0,max:5.0,step:0.1},
+  })
+
+  var translation = [x, y];
+  var rotation = [0, 1];
+  var scale = [scaleX, scaleY];
+  //var color = [Math.random(), Math.random(), Math.random(), 1];
+  const color = useMemo(() => [Math.random(), Math.random(), Math.random(), 1],[]);
 
   function main() {
     var canvas = document.querySelector("#c")
@@ -45,10 +60,10 @@ export default function Home() {
     var offset = 0;        // start at the beginning of the buffer
     gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset)
 
-    var translation = [100, 200];
-    var rotation = [0,1];
-    var scale = [1,2];
-    var color = [Math.random(), Math.random(), Math.random(), 1];
+    //var translation = [100, 200];
+    //var rotation = [0,1];
+    //var scale = [1,2];
+    //var color = [Math.random(), Math.random(), Math.random(), 1];
 
     drawScene()
 
@@ -80,6 +95,10 @@ export default function Home() {
       gl.uniform2fv(translationLocation, translation);
 
       // Set the rotation.
+      const angleInDegrees = 360 - angle;
+      const angleInRadians = angleInDegrees * Math.PI / 180;
+      rotation[0] = Math.sin(angleInRadians);
+      rotation[1] = Math.cos(angleInRadians);
       gl.uniform2fv(rotationLocation, rotation);
 
       // Set the scale
@@ -96,7 +115,7 @@ export default function Home() {
   
   useEffect(() => {
     main()
-  },[])
+  },[x,y,angle,scaleX,scaleY])
 
   return (
     <>
