@@ -1,9 +1,10 @@
 #version 300 es
-in vec2 a_position;
+in vec2 a_position;         //screen position in pixels
 
-uniform vec2 u_resolution;
+uniform vec2 u_resolution;  //vec2 screen resolution in pixels
 
 void main() {
+//bascially convert screen space to clip sapce
 
     vec2 zeroToOne = a_position / u_resolution;
 
