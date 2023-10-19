@@ -128,19 +128,8 @@ export default function Home() {
       // move the projection space to view space 
       var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
-
-      var matrix = m4.translate(viewProjectionMatrix, 0, 0, 0);
-        // Set the matrix.
-      gl.uniformMatrix4fv(matrixLocation, false, matrix);
-
-      // Draw the geometry.
-      var primitiveType = gl.TRIANGLES;
-      var offset = 0;
-      var count = 16 * 6;
-      gl.drawArrays(primitiveType, offset, count);
-
       // Draw 'F's in a circle
-      /*
+      
       for (var ii = 0; ii < numFs; ++ii) {
         var angle = ii * Math.PI * 2 / numFs;
   
@@ -157,7 +146,7 @@ export default function Home() {
         var count = 16 * 6;
         gl.drawArrays(primitiveType, offset, count);
       }
-      */
+      
     }
     
   }
