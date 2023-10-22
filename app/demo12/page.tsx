@@ -10,8 +10,9 @@ import { useControls } from 'leva'
 export default function Home() {
 
    // define the leva UI
-   const {objAngle} = useControls("Obj", {
+   const {objAngle, shininess} = useControls("Obj", {
     objAngle: {value:-360, min:-360, max:360, step:1},
+    shininess: {value:150, min:1, max:300, step:1},
   })
 
 
@@ -33,7 +34,12 @@ export default function Home() {
     var worldInverseTransposeLocation = gl.getUniformLocation(program, "u_worldInverseTranspose");
     var colorLocation = gl.getUniformLocation(program, "u_color");
     var lightWorldPositionLocation = gl.getUniformLocation(program, "u_lightWorldPosition");
-    //var reverseLightDirectionLocation = gl.getUniformLocation(program, "u_reverseLightDirection");
+    var viewWorldPositionLocation = gl.getUniformLocation(program, "u_viewWorldPosition");
+    var shininessLocation = gl.getUniformLocation(program, "u_shininess");
+
+    var lightColorLocation = gl.getUniformLocation(program, "u_lightColor");
+    var specularColorLocation = gl.getUniformLocation(program, "u_specularColor");
+
 
     // Setup position buffer
     var positionBuffer = gl.createBuffer();
@@ -134,6 +140,13 @@ export default function Home() {
       // set the light direction.
       //gl.uniform3fv(reverseLightDirectionLocation, m4.normalize([0.5, 0.7, 1]));
       gl.uniform3fv(lightWorldPositionLocation, [20, 30, 50]);
+      gl.uniform3fv(viewWorldPositionLocation, camera);
+      gl.uniform1f(shininessLocation, shininess);
+
+      // set the light color
+      gl.uniform3fv(lightColorLocation, m4.normalize([1, 0.6, 0.6]));  // red light
+      // set the specular color
+      gl.uniform3fv(specularColorLocation, m4.normalize([1, 0.2, 0.2]));  // red light
 
       // Draw the geometry.
       var primitiveType = gl.TRIANGLES;
@@ -147,7 +160,7 @@ export default function Home() {
   
   useEffect(() => {
     main()
-  },[objAngle])
+  },[objAngle,shininess])
 
   return (
     <>
