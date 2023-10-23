@@ -10,9 +10,13 @@ import { useControls } from 'leva'
 export default function Home() {
 
    // define the leva UI
-   const {objAngle, shininess} = useControls("Obj", {
+   const {objAngle, shininess,lightRotationX, lightRotationY ,innerLimit,outerLimit} = useControls("Obj", {
     objAngle: {value:-360, min:-360, max:360, step:1},
     shininess: {value:150, min:1, max:300, step:1},
+    lightRotationX: {value:0.0, min:-2.0, max:2.0, step:0.01},
+    lightRotationY: {value:0.0, min:-2.0, max:2.0, step:0.01},
+    innerLimit: {value:10, min:0, max:180, step:1},
+    outerLimit: {value:20, min:0, max:180, step:1},
   })
 
 
@@ -37,8 +41,10 @@ export default function Home() {
     var viewWorldPositionLocation = gl.getUniformLocation(program, "u_viewWorldPosition");
     var shininessLocation = gl.getUniformLocation(program, "u_shininess");
 
-    var lightColorLocation = gl.getUniformLocation(program, "u_lightColor");
-    var specularColorLocation = gl.getUniformLocation(program, "u_specularColor");
+    var lightDirectionLocation = gl.getUniformLocation(program, "u_lightDirection");
+    var innerLimitLocation = gl.getUniformLocation(program, "u_innerLimit");
+    var outerLimitLocation = gl.getUniformLocation(program, "u_outerLimit");
+
 
 
     // Setup position buffer
@@ -71,7 +77,12 @@ export default function Home() {
       return d * Math.PI / 180;
     }
 
-   
+    var fieldOfViewRadians = degToRad(60);
+    var fRotationRadians = degToRad(objAngle);
+    var lightDirection = [lightRotationX, lightRotationY, 1];  // this is computed in updateScene
+    var innerLimitRad = degToRad(innerLimit);
+    var outerLimitRad = degToRad(outerLimit);
+
     drawScene()
 
     function drawScene(){
@@ -98,9 +109,6 @@ export default function Home() {
       // Bind the attribute/buffer set we want.
       gl.bindVertexArray(vao);
 
-      var fieldOfViewRadians = degToRad(60);
-      var fRotationRadians = degToRad(objAngle);
-  
 
       // Compute the matrix
       var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -139,15 +147,24 @@ export default function Home() {
 
       // set the light direction.
       //gl.uniform3fv(reverseLightDirectionLocation, m4.normalize([0.5, 0.7, 1]));
-      gl.uniform3fv(lightWorldPositionLocation, [20, 30, 50]);
+      const lightPosition = [40, 60, 120];
+      gl.uniform3fv(lightWorldPositionLocation, lightPosition);
       gl.uniform3fv(viewWorldPositionLocation, camera);
       gl.uniform1f(shininessLocation, shininess);
 
-      // set the light color
-      gl.uniform3fv(lightColorLocation, m4.normalize([1, 0.6, 0.6]));  // red light
-      // set the specular color
-      gl.uniform3fv(specularColorLocation, m4.normalize([1, 0.2, 0.2]));  // red light
+      {
+        var lmat = m4.lookAt(lightPosition, target, up);
+        lmat = m4.multiply(m4.xRotation(lightRotationX), lmat);
+        lmat = m4.multiply(m4.yRotation(lightRotationY), lmat);
+        // get the zAxis from the matrix
+        // negate it because lookAt looks down the -Z axis
+        lightDirection = [-lmat[8], -lmat[9], -lmat[10]];
+      }
 
+      gl.uniform3fv(lightDirectionLocation, lightDirection);
+      gl.uniform1f(innerLimitLocation, Math.cos(innerLimitRad));
+      gl.uniform1f(outerLimitLocation, Math.cos(outerLimitRad));
+     
       // Draw the geometry.
       var primitiveType = gl.TRIANGLES;
       var offset = 0;
@@ -160,7 +177,7 @@ export default function Home() {
   
   useEffect(() => {
     main()
-  },[objAngle,shininess])
+  },[objAngle,shininess,lightRotationX,lightRotationY,innerLimit,outerLimit])
 
   return (
     <>
