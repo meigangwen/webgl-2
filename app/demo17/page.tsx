@@ -5,6 +5,7 @@ import vertexShaderSource from './shaders/vertex.glsl'
 import fragmentShaderSource from './shaders/fragment.glsl'
 import * as m4 from './m4'
 import * as twgl from "twgl.js"
+//import * as flattenedPrimitives from "./flattened-primitives.js"
 
 export default function Home() {
 
@@ -15,34 +16,7 @@ export default function Home() {
 
     twgl.setAttributePrefix("a_");
 
-    // declare functions to create flattened primitives
-    function createFlattenedVertices(gl, vertices, vertsPerColor) {
-      let last;
-      return twgl.createBufferInfoFromArrays(
-          gl,
-          twgl.primitives.makeRandomVertexColors(
-              twgl.primitives.deindexVertices(vertices),
-              {
-                vertsPerColor: vertsPerColor || 1,
-                rand: function(ndx, channel) {
-                  if (channel === 0) {
-                    last = 128 + Math.random() * 128 | 0;
-                  }
-                  return channel < 3 ? last : 255;
-                },
-              })
-        );
-    }
-  
-    function createFlattenedFunc(createVerticesFunc, vertsPerColor) {
-      return function(gl) {
-        const arrays = createVerticesFunc.apply(null,  Array.prototype.slice.call(arguments, 1));
-        return createFlattenedVertices(gl, arrays, vertsPerColor);
-      };
-    }
-
-
-    var sphereBufferInfo = createFlattenedFunc(twgl.primitives.createSphereVertices, 6);
+    var sphereBufferInfo = twgl.createBufferInfoFromArrays(gl, twgl.primitives.createSphereVertices);
     //var cubeBufferInfo   = flattenedPrimitives.createCubeBufferInfo(gl, 20);
     //var coneBufferInfo   = flattenedPrimitives.createTruncatedConeBufferInfo(gl, 10, 0, 20, 12, 1, true, false);
     

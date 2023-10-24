@@ -1,7 +1,7 @@
 import * as twgl from "twgl.js"
 
-(function() {
-    "use strict";
+//(function() {
+//    "use strict";
     // this function takes a set of indexed vertices
     // It deindexed them. It then adds random vertex
     // colors to each triangle. Finally it passes
@@ -35,8 +35,12 @@ import * as twgl from "twgl.js"
     // These functions make primitives with semi-random vertex colors.
     // This means the primitives can be displayed without needing lighting
     // which is important to keep the samples simple.
-  
-    flattenedPrimitives = {
+    function createSphereBufferInfo(){
+      return createFlattenedFunc(twgl.primitives.createSphereVertices, 6)
+    } 
+
+    /*
+    window.flattenedPrimitives = {
       "create3DFBufferInfo": createFlattenedFunc(twgl.primitives.create3DFVertices, 6),
       "createCubeBufferInfo": createFlattenedFunc(twgl.primitives.createCubeVertices, 6),
       "createPlaneBufferInfo": createFlattenedFunc(twgl.primitives.createPlaneVertices, 6),
@@ -48,6 +52,7 @@ import * as twgl from "twgl.js"
       "createTorusBufferInfo": createFlattenedFunc(twgl.primitives.createTorusVertices, 6),
       "createDiscBufferInfo": createFlattenedFunc(twgl.primitives.createDiscVertices, 4),
     };
-  
-  }());
+    */
+//  }());
+export {createSphereBufferInfo}
   
